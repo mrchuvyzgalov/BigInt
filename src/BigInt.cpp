@@ -217,6 +217,40 @@ BigInt operator -(const BigInt& numb1, const BigInt& numb2) {
 	return tmp;
 }
 
+BigInt operator *(const BigInt& numb1, const BigInt& numb2) {
+	if (numb1.sign == Sign::ZERO || numb2.sign == Sign::ZERO) return BigInt();
+	
+	BigInt res;
+
+	for (int i = 0; i < numb1.details[0]; ++i) {
+		for (int j = 0; j < numb2.details[0]; ++j) {
+			if (res.details.size() == i + j + 1) res.details.push_back(0);
+			res.details[i + j + 1] += numb1.details[i + 1] * numb2.details[j + 1];
+		}
+	}
+
+	for (int i = 0; i < numb1.details[0] + numb2.details[0]; ++i) {
+		if (res.details.size() == i + 1) res.details.push_back(0);
+		if (res.details[i + 1] >= res.base) {
+			if (res.details.size() == i + 2) res.details.push_back(0);
+			res.details[i + 2] += res.details[i + 1] / res.base;
+			res.details[i + 1] %= res.base;
+		}
+	}
+
+	res.details[0] = res.details.size() - 1;
+	for (size_t i = res.details.size() - 1; i > 0 && res.details[i] == 0; --i) {
+		res.details[0]--;
+	}
+
+	if (numb1.sign == numb2.sign) res.sign = Sign::PLUS;
+	else res.sign = Sign::MINUS;
+
+	res.clearGarbage();
+
+	return res;
+}
+
 BigInt Abs(const BigInt& numb) {
 	BigInt newNumb = numb;
 
@@ -237,6 +271,10 @@ void BigInt::operator +=(const BigInt& numb) {
 
 void BigInt::operator -=(const BigInt& numb) {
 	*this = *this - numb;
+}
+
+void BigInt::operator *=(const BigInt& numb) {
+	*this = *this * numb;
 }
 
 void BigInt::clearGarbage() {

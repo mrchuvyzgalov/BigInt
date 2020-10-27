@@ -27,6 +27,7 @@ public:
 
 	friend BigInt operator +(const BigInt& numb1, const BigInt& numb2);
 	friend BigInt operator -(const BigInt& numb1, const BigInt& numb2);
+	friend BigInt operator *(const BigInt& numb1, const BigInt& numb2);
 
 	friend BigInt Abs(const BigInt& numb);
 
@@ -34,6 +35,7 @@ public:
 	void operator =(const BigInt& numb);
 	void operator +=(const BigInt& numb);
 	void operator -=(const BigInt& numb);
+	void operator *=(const BigInt& numb);
 
 private:
 	void clearGarbage();

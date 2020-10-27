@@ -557,6 +557,87 @@ void TestAbs() {
 	}
 }
 
+void TestMul() {
+	{
+		BigInt a;
+		BigInt b;
+		std::stringstream ss;
+		ss << a * b;
+		AssertEqual(ss.str(), "0", "First test");
+	}
+	{
+		BigInt a("362732");
+		BigInt b;
+		std::stringstream ss;
+		ss << a * b;
+		AssertEqual(ss.str(), "0", "Second test");
+	}
+	{
+		BigInt a("362732");
+		BigInt b;
+		std::stringstream ss;
+		ss << b * a;
+		AssertEqual(ss.str(), "0", "Third test");
+	}
+	{
+		BigInt a("362732");
+		BigInt b("2162");
+		std::stringstream ss;
+		ss << b * a;
+		AssertEqual(ss.str(), "784226584", "Forth test");
+	}
+	{
+		BigInt a("-362732");
+		BigInt b("2162");
+		std::stringstream ss;
+		ss << b * a;
+		AssertEqual(ss.str(), "-784226584", "Fifth test");
+	}
+}
+
+void TestMulEqual() {
+	{
+		BigInt a;
+		BigInt b;
+		a *= b;
+		std::stringstream ss;
+		ss << a;
+		AssertEqual(ss.str(), "0", "First test");
+	}
+	{
+		BigInt a("362732");
+		BigInt b;
+		a *= b;
+		std::stringstream ss;
+		ss << a;
+		AssertEqual(ss.str(), "0", "Second test");
+	}
+	{
+		BigInt a("362732");
+		BigInt b;
+		b *= a;
+		std::stringstream ss;
+		ss << b;
+		AssertEqual(ss.str(), "0", "Third test");
+	}
+	{
+		BigInt a("362732");
+		BigInt b("2162");
+		b *= a;
+		std::stringstream ss;
+		ss << b;
+		AssertEqual(ss.str(), "784226584", "Forth test");
+	}
+	{
+		BigInt a("-362732");
+		BigInt b("2162");
+		b *= a;
+		std::stringstream ss;
+		ss << b;
+		AssertEqual(ss.str(), "-784226584", "Fifth test");
+	}
+}
+
 void TestAll() {
 	TestRunner tr;
 	tr.RunTest(TestOut, "TestOut");
@@ -570,4 +651,6 @@ void TestAll() {
 	tr.RunTest(TestDif, "TestDif");
 	tr.RunTest(TestSumEqual, "TestSumEqual");
 	tr.RunTest(TestDifEqual, "TestDifEqual");
+	tr.RunTest(TestMul, "TestMul");
+	tr.RunTest(TestMulEqual, "TestMulEqual");
 }

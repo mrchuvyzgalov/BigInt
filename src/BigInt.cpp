@@ -125,6 +125,8 @@ bool operator <=(const BigInt& numb1, const BigInt& numb2) {
 
 
 BigInt operator +(const BigInt& numb1, const BigInt& numb2) {
+	BigInt tmpNumb1 = numb1, tmpNumb2 = numb2;
+
 	if (numb1.sign == Sign::ZERO) return numb2;
 	if (numb2.sign == Sign::ZERO) return numb1;
 
@@ -139,9 +141,11 @@ BigInt operator +(const BigInt& numb1, const BigInt& numb2) {
 				res.details.push_back(0);
 			}
 			if (res.details.size() == i + 1) res.details.push_back(0);
+			if (tmpNumb1.details.size() == i + 1) tmpNumb1.details.push_back(0);
+			if (tmpNumb2.details.size() == i + 1) tmpNumb2.details.push_back(0);
 
-			res.details[i + 1] = (res.details[i] + numb1.details[i] + numb2.details[i]) / res.base;
-			res.details[i] = (res.details[i] + numb1.details[i] + numb2.details[i]) % res.base;
+			res.details[i + 1] = (res.details[i] + tmpNumb1.details[i] + tmpNumb2.details[i]) / res.base;
+			res.details[i] = (res.details[i] + tmpNumb1.details[i] + tmpNumb2.details[i]) % res.base;
 		}
 
 		if (res.details[maxi + 1] == 0) res.details[0] = maxi;
@@ -251,6 +255,18 @@ BigInt operator *(const BigInt& numb1, const BigInt& numb2) {
 	return res;
 }
 
+BigInt operator /(const BigInt& numb1, const BigInt& numb2) {
+	std::tuple t = DivMod(numb1, numb2);
+	return std::get<0>(t);
+}
+
+BigInt operator %(const BigInt& numb1, const BigInt& numb2) {
+	std::tuple t = DivMod(numb1, numb2);
+	return std::get<1>(t);
+}
+
+
+
 BigInt Abs(const BigInt& numb) {
 	BigInt newNumb = numb;
 
@@ -259,6 +275,8 @@ BigInt Abs(const BigInt& numb) {
 
 	return newNumb;
 }
+
+
 
 void BigInt::operator =(const BigInt& numb) { 
 	details = numb.details;
@@ -275,6 +293,66 @@ void BigInt::operator -=(const BigInt& numb) {
 
 void BigInt::operator *=(const BigInt& numb) {
 	*this = *this * numb;
+}
+
+void BigInt::operator /=(const BigInt& numb) {
+	*this = *this / numb;
+}
+
+void BigInt::operator %=(const BigInt& numb) {
+	*this = *this % numb;
+}
+
+
+std::tuple<BigInt, BigInt> DivMod(const BigInt& numb1, const BigInt& numb2) {
+	if (numb2 == BigInt()) throw std::runtime_error("Error: division by zero\n");
+	if (numb1 == BigInt()) return std::make_tuple(BigInt(), BigInt());
+	if (Abs(numb1) < Abs(numb2)) return std::make_tuple(BigInt(), numb1);
+	
+	BigInt left, right = Abs(numb1) + BigInt("1"), mid;
+
+	while (right - left > BigInt("1")) {
+		mid = DivByTwo(left + right);
+
+		if (Abs(numb2) * mid <= Abs(numb1)) left = mid;
+		else right = mid;
+	}
+
+	BigInt div = left;
+	if (div == BigInt()) div.sign = Sign::ZERO;
+	else if (numb1.sign == numb2.sign) div.sign = Sign::PLUS;
+	else div.sign = Sign::MINUS;
+
+	BigInt mod = Abs(numb1) - left * Abs(numb2);
+	if (mod == BigInt()) mod.sign = Sign::ZERO;
+	else if (numb1.sign == Sign::PLUS) mod.sign = Sign::PLUS;
+	else mod.sign = Sign::MINUS;
+
+	div.clearGarbage();
+	mod.clearGarbage();
+
+	return std::make_tuple(div, mod);
+}
+
+BigInt DivByTwo(const BigInt& numb) {
+	BigInt res = numb;
+	int carry = 0;
+	for (int i = (int)res.details[0]; i > 0; --i) {
+		long long cur = numb.details[i] + carry * numb.base;
+		res.details[i] = int(cur / 2);
+		carry = int(cur % 2);
+	}
+	
+	res.details[0] = res.details.size() - 1;
+	for (size_t i = res.details.size() - 1; i > 0 && res.details[i] == 0; --i) {
+		res.details[0]--;
+	}
+
+	if (res.details[0] == 0) res.sign = Sign::ZERO;
+	else res.sign = numb.sign;
+
+	res.clearGarbage();
+	return res;
 }
 
 void BigInt::clearGarbage() {

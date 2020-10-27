@@ -4,6 +4,7 @@
 #include "BigInt.h"
 
 #include <sstream>
+#include <tuple>
 
 void TestOut() {
 	{
@@ -638,6 +639,126 @@ void TestMulEqual() {
 	}
 }
 
+void TestDivByTwo() {
+	{
+		BigInt a("125612");
+		std::stringstream ss;
+		ss << DivByTwo(a);
+		AssertEqual(ss.str(), "62806", "First test");
+	}
+	{
+		BigInt a;
+		std::stringstream ss;
+		ss << DivByTwo(a);
+		AssertEqual(ss.str(), "0", "Second test");
+	}
+	{
+		BigInt a("-125612");
+		std::stringstream ss;
+		ss << DivByTwo(a);
+		AssertEqual(ss.str(), "-62806", "Third test");
+	}
+	{
+		BigInt a("125613");
+		std::stringstream ss;
+		ss << DivByTwo(a);
+		AssertEqual(ss.str(), "62806", "Forth test");
+	}
+	{
+		BigInt a("-125613");
+		std::stringstream ss;
+		ss << DivByTwo(a);
+		AssertEqual(ss.str(), "-62806", "Fifth test");
+	}
+}
+
+void TestDivMod() {
+	{
+		BigInt a("1234");
+		BigInt b("35");
+		std::tuple t = DivMod(a, b);
+		BigInt div = std::get<0>(t);
+		BigInt mod = std::get<1>(t);
+		std::stringstream smod, sdiv;
+		sdiv << div;
+		smod << mod;
+		AssertEqual(sdiv.str(), "35", "First div test");
+		AssertEqual(smod.str(), "9", "First mod test");
+	}
+	{
+		BigInt a("-1234");
+		BigInt b("35");
+		std::tuple t = DivMod(a, b);
+		BigInt div = std::get<0>(t);
+		BigInt mod = std::get<1>(t);
+		std::stringstream smod, sdiv;
+		sdiv << div;
+		smod << mod;
+		AssertEqual(sdiv.str(), "-35", "Second div test");
+		AssertEqual(smod.str(), "-9", "Second mod test");
+	}
+	{
+		BigInt a("-1234");
+		BigInt b("-35");
+		std::tuple t = DivMod(a, b);
+		BigInt div = std::get<0>(t);
+		BigInt mod = std::get<1>(t);
+		std::stringstream smod, sdiv;
+		sdiv << div;
+		smod << mod;
+		AssertEqual(sdiv.str(), "35", "Third div test");
+		AssertEqual(smod.str(), "-9", "Third mod test");
+	}
+	{
+		BigInt a("1234");
+		BigInt b("-35");
+		std::tuple t = DivMod(a, b);
+		BigInt div = std::get<0>(t);
+		BigInt mod = std::get<1>(t);
+		std::stringstream smod, sdiv;
+		sdiv << div;
+		smod << mod;
+		AssertEqual(sdiv.str(), "-35", "Forth div test");
+		AssertEqual(smod.str(), "9", "Forth mod test");
+	}
+	{
+		BigInt a;
+		BigInt b("-35");
+		std::tuple t = DivMod(a, b);
+		BigInt div = std::get<0>(t);
+		BigInt mod = std::get<1>(t);
+		std::stringstream smod, sdiv;
+		sdiv << div;
+		smod << mod;
+		AssertEqual(sdiv.str(), "0", "Fifth div test");
+		AssertEqual(smod.str(), "0", "Fifth mod test");
+	}
+	{
+		BigInt a("172");
+		BigInt b("-356");
+		std::tuple t = DivMod(a, b);
+		BigInt div = std::get<0>(t);
+		BigInt mod = std::get<1>(t);
+		std::stringstream smod, sdiv;
+		sdiv << div;
+		smod << mod;
+		AssertEqual(sdiv.str(), "0", "Fifth div test");
+		AssertEqual(smod.str(), "172", "Fifth mod test");
+	}
+	{
+		BigInt a("-172");
+		BigInt b("-356");
+		std::tuple t = DivMod(a, b);
+		BigInt div = std::get<0>(t);
+		BigInt mod = std::get<1>(t);
+		std::stringstream smod, sdiv;
+		sdiv << div;
+		smod << mod;
+		AssertEqual(sdiv.str(), "0", "Fifth div test");
+		AssertEqual(smod.str(), "-172", "Fifth mod test");
+	}
+}
+
 void TestAll() {
 	TestRunner tr;
 	tr.RunTest(TestOut, "TestOut");
@@ -653,4 +774,6 @@ void TestAll() {
 	tr.RunTest(TestDifEqual, "TestDifEqual");
 	tr.RunTest(TestMul, "TestMul");
 	tr.RunTest(TestMulEqual, "TestMulEqual");
+	tr.RunTest(TestDivByTwo, "TestDivByTwo");
+	tr.RunTest(TestDivMod, "TestDivMod");
 }

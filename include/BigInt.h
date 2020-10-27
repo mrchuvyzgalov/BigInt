@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <tuple>
 
 enum class Sign { MINUS, ZERO, PLUS };
 
@@ -28,6 +29,11 @@ public:
 	friend BigInt operator +(const BigInt& numb1, const BigInt& numb2);
 	friend BigInt operator -(const BigInt& numb1, const BigInt& numb2);
 	friend BigInt operator *(const BigInt& numb1, const BigInt& numb2);
+	friend BigInt operator /(const BigInt& numb1, const BigInt& numb2);
+	friend BigInt operator %(const BigInt& numb1, const BigInt& numb2);
+
+	friend std::tuple<BigInt, BigInt> DivMod(const BigInt& numb1, const BigInt& numb2);
+	friend BigInt DivByTwo(const BigInt& numb);
 
 	friend BigInt Abs(const BigInt& numb);
 
@@ -36,6 +42,8 @@ public:
 	void operator +=(const BigInt& numb);
 	void operator -=(const BigInt& numb);
 	void operator *=(const BigInt& numb);
+	void operator /=(const BigInt& numb);
+	void operator %=(const BigInt& numb);
 
 private:
 	void clearGarbage();

@@ -13,6 +13,8 @@ class BigInt {
 public:
 	explicit BigInt();
 	explicit BigInt(const std::string& number);
+	explicit BigInt(const long long& number);
+	
 	BigInt(const BigInt& numb);
 
 	friend std::ostream& operator <<(std::ostream& out, const BigInt& numb);
@@ -49,7 +51,7 @@ private:
 	void clearGarbage();
 
 private:
+	std::vector<long long> details;
 	Sign sign;
-	std::vector<int> details;
-	const int base = 1e1;
+	const long long base = 1e10;
 };

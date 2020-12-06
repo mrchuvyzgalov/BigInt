@@ -32,8 +32,8 @@ BigInt::BigInt(const std::string& number) {
 		char digit = number[i];
 		if (digit < '0' || digit > '9') throw std::invalid_argument("Error: wrong number format\n");
 
-		for (int i = details[0]; i > 0; --i) {
-			if (details.size() == i + 1) {
+		for (long long i = details[0]; i > 0; --i) {
+			if (static_cast<long long>(details.size()) == i + 1) {
 				details.push_back(0);
 			}
 			details[i + 1] += (details[i] * 10) / base;
@@ -50,22 +50,23 @@ BigInt::BigInt(const std::string& number) {
 	clearGarbage();
 }
 
+BigInt::BigInt(const long long& number) {
+	*this = BigInt(std::to_string(number));
+}
 
 BigInt::BigInt(const BigInt& numb) : details(numb.details), sign(numb.sign) { }
 
-
-
 std::ostream& operator <<(std::ostream& out, const BigInt& numb) {
-	int count_of_digits = std::to_string(numb.base).size() - 1;
+	long long count_of_digits = std::to_string(numb.base).size() - 1;
 
 	if (numb.sign == Sign::MINUS) out << "-";
 
 	out << numb.details[numb.details[0]];
 
-	for (int i = numb.details[0] - 1; i >= 1; --i) {
+	for (long long i = numb.details[0] - 1; i >= 1; --i) {
 		std::string s = std::to_string(numb.details[i]);
 
-		for (int j = s.size(); j < count_of_digits; ++j) {
+		for (long long j = s.size(); j < count_of_digits; ++j) {
 			out << 0;
 		}
 		out << numb.details[i];
@@ -100,7 +101,7 @@ bool operator >(const BigInt& numb1, const BigInt& numb2) {
 		else return numb1.details[0] > numb2.details[0];
 	}
 
-	int i = numb1.details[0];
+	long long i = numb1.details[0];
 	while (i > 0 && numb1.details[i] == numb2.details[i]) {
 		--i;
 	}
@@ -135,14 +136,14 @@ BigInt operator +(const BigInt& numb1, const BigInt& numb2) {
 	if (numb1.sign == numb2.sign) {
 		res.sign = numb1.sign;
 
-		int maxi = std::max(numb1.details[0], numb2.details[0]);
-		for (int i = 1; i <= maxi; ++i) {
-			if (res.details.size() == i + 1) {
+		auto maxi = std::max(numb1.details[0], numb2.details[0]);
+		for (long long i = 1; i <= maxi; ++i) {
+			if (res.details.size() == static_cast<size_t>(i + 1)) {
 				res.details.push_back(0);
 			}
-			if (res.details.size() == i + 1) res.details.push_back(0);
-			if (tmpNumb1.details.size() == i + 1) tmpNumb1.details.push_back(0);
-			if (tmpNumb2.details.size() == i + 1) tmpNumb2.details.push_back(0);
+			if (res.details.size() == static_cast<size_t>(i + 1)) res.details.push_back(0);
+			if (tmpNumb1.details.size() == static_cast<size_t>(i + 1)) tmpNumb1.details.push_back(0);
+			if (tmpNumb2.details.size() == static_cast<size_t>(i + 1)) tmpNumb2.details.push_back(0);
 
 			res.details[i + 1] = (res.details[i] + tmpNumb1.details[i] + tmpNumb2.details[i]) / res.base;
 			res.details[i] = (res.details[i] + tmpNumb1.details[i] + tmpNumb2.details[i]) % res.base;
@@ -187,18 +188,18 @@ BigInt operator -(const BigInt& numb1, const BigInt& numb2) {
 
 	if (numb1.sign == numb2.sign) {
 		if (Abs(numb1) > Abs(numb2)) {
-			for (int i = 1; i <= numb2.details[0]; ++i) {
+			for (long long i = 1; i <= numb2.details[0]; ++i) {
 				tmp.details[i] -= numb2.details[i];
-				int j = i;
+				long long j = i;
 				while (tmp.details[j] < 0 && (j <= tmp.details[0])) {
 					tmp.details[j] += tmp.base;
-					if (tmp.details.size() == j + 1) tmp.details.push_back(0);
+					if (tmp.details.size() == static_cast<size_t>(j + 1)) tmp.details.push_back(0);
 					tmp.details[j + 1]--;
 					j++;
 				}
 			}
 
-			int i = tmp.details[0];
+			long long i = tmp.details[0];
 			while (i > 1 && tmp.details[i] == 0) --i;
 			tmp.details[0] = i;
 		}
@@ -226,17 +227,17 @@ BigInt operator *(const BigInt& numb1, const BigInt& numb2) {
 	
 	BigInt res;
 
-	for (int i = 0; i < numb1.details[0]; ++i) {
-		for (int j = 0; j < numb2.details[0]; ++j) {
-			if (res.details.size() == i + j + 1) res.details.push_back(0);
+	for (long long i = 0; i < numb1.details[0]; ++i) {
+		for (long long j = 0; j < numb2.details[0]; ++j) {
+			if (res.details.size() == static_cast<size_t>(i + j + 1)) res.details.push_back(0);
 			res.details[i + j + 1] += numb1.details[i + 1] * numb2.details[j + 1];
 		}
 	}
 
-	for (int i = 0; i < numb1.details[0] + numb2.details[0]; ++i) {
-		if (res.details.size() == i + 1) res.details.push_back(0);
+	for (long long i = 0; i < numb1.details[0] + numb2.details[0]; ++i) {
+		if (res.details.size() == static_cast<size_t>(i + 1)) res.details.push_back(0);
 		if (res.details[i + 1] >= res.base) {
-			if (res.details.size() == i + 2) res.details.push_back(0);
+			if (res.details.size() == static_cast<size_t>(i + 2)) res.details.push_back(0);
 			res.details[i + 2] += res.details[i + 1] / res.base;
 			res.details[i + 1] %= res.base;
 		}
@@ -336,11 +337,11 @@ std::tuple<BigInt, BigInt> DivMod(const BigInt& numb1, const BigInt& numb2) {
 
 BigInt DivByTwo(const BigInt& numb) {
 	BigInt res = numb;
-	int carry = 0;
-	for (int i = (int)res.details[0]; i > 0; --i) {
+	long long carry = 0;
+	for (long long i = res.details[0]; i > 0; --i) {
 		long long cur = numb.details[i] + carry * numb.base;
-		res.details[i] = int(cur / 2);
-		carry = int(cur % 2);
+		res.details[i] = (long long)cur / 2;
+		carry = (long long)cur % 2;
 	}
 	
 	res.details[0] = res.details.size() - 1;

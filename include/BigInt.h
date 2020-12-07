@@ -53,5 +53,5 @@ private:
 private:
 	std::vector<long long> details;
 	Sign sign;
-	const long long base = 1e10;
+	const long long base = 1e7;
 };

@@ -257,12 +257,12 @@ BigInt operator *(const BigInt& numb1, const BigInt& numb2) {
 }
 
 BigInt operator /(const BigInt& numb1, const BigInt& numb2) {
-	std::tuple t = DivMod(numb1, numb2);
+	std::tuple<BigInt, BigInt> t = DivMod(numb1, numb2);
 	return std::get<0>(t);
 }
 
 BigInt operator %(const BigInt& numb1, const BigInt& numb2) {
-	std::tuple t = DivMod(numb1, numb2);
+	std::tuple<BigInt, BigInt> t = DivMod(numb1, numb2);
 	return std::get<1>(t);
 }
 
